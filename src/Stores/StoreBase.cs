@@ -66,8 +66,8 @@ namespace AuthorizationExtension.Stores
 
         public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-             cancellationToken.ThrowIfCancellationRequested();
             Table.Update(entity);
             await DbContext.SaveChangesAsync();
             return entity;
