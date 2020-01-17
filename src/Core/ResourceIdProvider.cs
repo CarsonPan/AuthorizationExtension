@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing.Template;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace src.Core
@@ -11,9 +13,17 @@ namespace src.Core
     public class ResourceIdProvider : IResourceIdProvider
     {
         protected readonly IHttpContextAccessor HttpContextAccessor;
-        public ResourceIdProvider(IHttpContextAccessor httpContextAccessor)
+        protected readonly IOptionsMonitor<ResourceOptions> ResourceOptionsAccessor;
+        public ResourceIdProvider(IHttpContextAccessor httpContextAccessor,
+                                  IOptionsMonitor<ResourceOptions> resourceOptionsAccessor)
         {
             HttpContextAccessor = httpContextAccessor;
+            ResourceOptionsAccessor = resourceOptionsAccessor;
+        }
+
+        protected ResourceOptions GetResourceOptions()
+        {
+            return ResourceOptionsAccessor.CurrentValue;
         }
 
         protected HttpRequest GetHttpRequest()
@@ -59,25 +69,25 @@ namespace src.Core
         }
 
         protected string GetRoutePatternText(RouteTemplate routeTemplate)
-        {   
-            StringBuilder templateBuilder=new StringBuilder();
-            foreach(TemplateSegment segment in routeTemplate.Segments)
+        {
+            StringBuilder templateBuilder = new StringBuilder();
+            foreach (TemplateSegment segment in routeTemplate.Segments)
             {
-                 foreach(TemplatePart part in segment.Parts)
-                 {
-                     if(part.IsParameter)
-                     {
-                         templateBuilder.Append("{").Append(part.Name).Append("}");
-                     }
-                     else
-                     {
-                         templateBuilder.Append(part.Text);
-                     }
-                 }
+                foreach (TemplatePart part in segment.Parts)
+                {
+                    if (part.IsParameter)
+                    {
+                        templateBuilder.Append("{").Append(part.Name).Append("}");
+                    }
+                    else
+                    {
+                        templateBuilder.Append(part.Text);
+                    }
+                }
             }
             return templateBuilder.ToString();
         }
-        protected string GetRoutePatternText()
+        protected virtual string GetRoutePatternText()
         {
             Endpoint endpoint = HttpContextAccessor?.HttpContext.GetEndpoint();
             if (endpoint is RouteEndpoint routeEndpoint)
@@ -92,11 +102,38 @@ namespace src.Core
             }
             return null;
         }
+
+        protected IEnumerable<string> GetRequiredKeys()
+        {
+            ResourceOptions resourceOptions = GetResourceOptions();
+            return resourceOptions.RequiredRouteKeys.Union(resourceOptions.CustomRouteKeys);
+        }
         public string GetResourceId()
         {
             HttpRequest request = GetHttpRequest();
-            //return $"{request.Method}|{request.Scheme}|{request.PathBase}{request.Path}";
-            throw new NotImplementedException();
+            string routePatternText = GetRoutePatternText();
+            if (string.IsNullOrWhiteSpace(routePatternText))
+            {
+                return $"{request.Method}|{request.Scheme}|{request.PathBase}{request.Path}".ToLower();
+            }
+            RouteData routeData = HttpContextAccessor?.HttpContext.GetRouteData();
+            if (routeData == null || routeData.Values.Count == 0)
+            {
+                return $"{request.Method}|{request.Scheme}|{routePatternText}";
+            }
+            IEnumerable<string> requiredKeys=GetRequiredKeys();
+            if(requiredKeys.IsNullOrEmpty())
+            {
+                return $"{request.Method}|{request.Scheme}|{routePatternText}";
+            }
+            foreach (string key in routeData.Values.Keys)
+            {
+                    if (requiredKeys.Any(i => i == key))
+                    {
+                        routePatternText =routePatternText.Replace("{" + key + "}", routeData.Values[key].ToString());
+                    }
+            }
+            return $"{request.Method}|{request.Scheme}|{routePatternText}";
         }
     }
 }
