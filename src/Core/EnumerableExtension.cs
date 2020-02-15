@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace src.Core
+namespace AuthorizationExtension.Core
 {
     public static class EnumerableExtension
     {

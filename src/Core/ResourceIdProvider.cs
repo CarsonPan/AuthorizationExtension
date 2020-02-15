@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace src.Core
+namespace AuthorizationExtension.Core
 {
     public class ResourceIdProvider : IResourceIdProvider
     {

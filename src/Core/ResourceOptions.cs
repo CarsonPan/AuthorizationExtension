@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace src.Core
+namespace AuthorizationExtension.Core
 {
     public class ResourceOptions
     {

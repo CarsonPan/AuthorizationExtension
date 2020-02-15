@@ -1,4 +1,4 @@
-namespace src.Core
+namespace AuthorizationExtension.Core
 {
     public interface IResourceIdProvider
     {
