@@ -2,9 +2,9 @@ namespace AuthorizationExtension.Models
 {
     public enum ResourceType
     {
-        
-        Api=0,
-        Page=1,
-        UiElement=2
+        None=0,
+        Api=1,
+        UiElement=2,
+        Other=3,
     }
 }

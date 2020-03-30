@@ -13,17 +13,17 @@ namespace AuthorizationExtension.Core
     public class ResourceIdProvider : IResourceIdProvider
     {
         protected readonly IHttpContextAccessor HttpContextAccessor;
-        protected readonly IOptionsMonitor<ResourceOptions> ResourceOptionsAccessor;
+        protected readonly IOptionsMonitor<AuthorizationExtensionOptions> AuthorizationExtensionOptionsAccessor;
         public ResourceIdProvider(IHttpContextAccessor httpContextAccessor,
-                                  IOptionsMonitor<ResourceOptions> resourceOptionsAccessor)
+                                  IOptionsMonitor<AuthorizationExtensionOptions> authorizationExtensionOptionsAccessor)
         {
             HttpContextAccessor = httpContextAccessor;
-            ResourceOptionsAccessor = resourceOptionsAccessor;
+            AuthorizationExtensionOptionsAccessor = authorizationExtensionOptionsAccessor;
         }
 
         protected ResourceOptions GetResourceOptions()
         {
-            return ResourceOptionsAccessor.CurrentValue;
+            return AuthorizationExtensionOptionsAccessor.CurrentValue?.Resource??new ResourceOptions();
         }
 
         protected HttpRequest GetHttpRequest()

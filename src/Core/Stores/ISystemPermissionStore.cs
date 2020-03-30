@@ -4,8 +4,7 @@ using AuthorizationExtension.Models;
 
 namespace AuthorizationExtension.Core
 {
-    public interface ISystemResourceStore:IStoreBase<SystemResource>
+    public interface ISystemPermissionStore<TPermission> : IStoreBase<TPermission> where TPermission : SystemPermission
     {
-        
     }
 }

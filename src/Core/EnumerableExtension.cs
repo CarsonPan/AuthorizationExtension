@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AuthorizationExtension.Core
 {
-    public static class EnumerableExtension
+    internal static class EnumerableExtension
     {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> source)
         {
@@ -35,6 +35,14 @@ namespace AuthorizationExtension.Core
                 return source[index];
             }
             return default;
+        }
+
+        public static void Append<T>(this List<T> list,IEnumerable<T> input)
+        {
+            if(input!=null)
+            {
+                list.AddRange(input);
+            }
         }
     }
 }
