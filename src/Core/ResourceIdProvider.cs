@@ -73,6 +73,7 @@ namespace AuthorizationExtension.Core
             StringBuilder templateBuilder = new StringBuilder();
             foreach (TemplateSegment segment in routeTemplate.Segments)
             {
+                templateBuilder.Append("/");
                 foreach (TemplatePart part in segment.Parts)
                 {
                     if (part.IsParameter)
