@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ISystemPermissionUserService<TPermissionUser>, SystemPermissionUserService<TPermissionUser>>();
             // services.AddScoped<IRoleAccessor, DefaultRoleAccessor>();
             // services.AddScoped<IUserIdAccessor, DefaultUserIdAccessor>();
-            services.AddScoped<IPolicyCombiner, PolicyCombiner>();
+            services.AddTransient<IPolicyCombiner, PolicyCombiner>();
             services.AddScoped<IResourceIdProvider, ResourceIdProvider>();
             services.AddScoped<IAuthorizeDataProvider, AuthorizeDataProvider<TResource, TPermission>>();
             services.AddScoped<ICacheManager, CacheManager>();
