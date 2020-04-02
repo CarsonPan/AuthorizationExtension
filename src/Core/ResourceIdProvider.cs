@@ -107,6 +107,10 @@ namespace AuthorizationExtension.Core
         protected IEnumerable<string> GetRequiredKeys()
         {
             ResourceOptions resourceOptions = GetResourceOptions();
+            if(resourceOptions.CustomRouteKeys.IsNullOrEmpty())
+            {
+                return resourceOptions.RequiredRouteKeys;
+            }
             return resourceOptions.RequiredRouteKeys.Union(resourceOptions.CustomRouteKeys);
         }
         public string GetResourceId()
@@ -115,7 +119,7 @@ namespace AuthorizationExtension.Core
             string routePatternText = GetRoutePatternText();
             if (string.IsNullOrWhiteSpace(routePatternText))
             {
-                return $"{request.Method}|{request.Scheme}|{request.PathBase}{request.Path}".ToLower();
+                return $"{request.Method}|{request.Scheme}|{request.PathBase}{request.Path}";
             }
             RouteData routeData = HttpContextAccessor?.HttpContext.GetRouteData();
             if (routeData == null || routeData.Values.Count == 0)
